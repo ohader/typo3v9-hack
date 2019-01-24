@@ -21,6 +21,10 @@ http://typo3v9-hack.ddev.local/typo3/index.php
 &processingInstructions%5Bcrop%5D=
 ```
 
+## Inspections
+
+`\TYPO3\CMS\Backend\Controller\File\ThumbnailController`
+
 ## Security Vulnerability
 
 Never was an issue for any released versions because it has been
