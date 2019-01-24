@@ -78,9 +78,10 @@ Using some Extbase extension to trigger our payload.
 **Frontend**
 
 `ext:form` only works when having a valid backend session, plugins having an uncached default action work perfectly.
+Using `&no_cache=1` might not work in all scenarios (but, it does here in this demo project).
 
 ```
-http://typo3v9-hack.ddev.local/index.php?id=38&tx_form_formframework[__trustedProperties]=PAYLOAD
+http://typo3v9-hack.ddev.local/index.php?id=38&no_cache=1&tx_form_formframework[__trustedProperties]=PAYLOAD
 ```
 
 **Backend**
