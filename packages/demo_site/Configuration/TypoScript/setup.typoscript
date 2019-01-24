@@ -29,3 +29,17 @@ page {
         demo_site_scripts = EXT:demo_site/Resources/Public/JavaScript/Dist/scripts.js
     }
 }
+
+// this is stupid TypoScript
+page.10.variables {
+  name = COA_INT
+  name {
+    10 = TEXT
+    10 {
+      if.notEmpty.data = gp:name
+      data = gp:name
+      noTrimWrap = |<span class="page-uid-{page:uid}">Hi |! Great you're back</span>|
+      insertData = 1
+    }
+  }
+}
