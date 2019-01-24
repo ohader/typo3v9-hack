@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2019-01-24T01:58:23Z" product-name="demo_comments">
+		<header/>
+		<body>
+			<trans-unit id="tx_democomments_domain_model_comment">
+				<source>Comment</source>
+			</trans-unit>
+			<trans-unit id="tx_democomments_domain_model_comment.date">
+				<source>Date</source>
+			</trans-unit>
+			<trans-unit id="tx_democomments_domain_model_comment.email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="tx_democomments_domain_model_comment.message">
+				<source>Message</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

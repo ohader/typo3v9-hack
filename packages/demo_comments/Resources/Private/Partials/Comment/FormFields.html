@@ -1,0 +1,17 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<div class="input-group mb-3">
+		<f:form.textfield property="email" additionalAttributes="{'aria-describedby': 'emailAppend', 'required': 'required'}"
+						  type="email" class="form-control" id="email" placeholder="somebody@example.org" />
+		<div class="input-group-append">
+			<span class="input-group-text" style="width: 3em" id="emailAppend">@</span>
+		</div>
+	</div>
+
+	<div class="input-group mb-3">
+		<f:form.textarea property="message" additionalAttributes="{'aria-describedby': 'messageAppend', 'required': 'required'}"
+			class="form-control" id="message" placeholder="Your feedback message..." />
+		<div class="input-group-append">
+			<span class="input-group-text" style="width: 3em" id="messageAppend">...</span>
+		</div>
+	</div>
+</html>

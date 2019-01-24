@@ -1,0 +1,177 @@
+From b670dad2fb1e9e3b8133a16f082078606cea75ec Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Sun, 13 Jan 2019 21:51:28 +0100
+Subject: [PATCH 4/4] Revert "[SECURITY] Ensure validity of parameters
+ submitted to ThumbnailController"
+
+This reverts commit 5dbcb5da27bc43bb2a19c770e4d226f47c7bcf0c.
+
+Change-Id: I879d2661940f3910b8ac45f552f8cf6f0b6774c2
+---
+ .../Controller/File/ThumbnailController.php   | 93 ++++---------------
+ .../Classes/Utility/BackendUtility.php        | 23 ++---
+ 2 files changed, 28 insertions(+), 88 deletions(-)
+
+diff --git a/typo3/sysext/backend/Classes/Controller/File/ThumbnailController.php b/typo3/sysext/backend/Classes/Controller/File/ThumbnailController.php
+index ba7c4fed81..c4eb7e6c86 100644
+--- a/typo3/sysext/backend/Classes/Controller/File/ThumbnailController.php
++++ b/typo3/sysext/backend/Classes/Controller/File/ThumbnailController.php
+@@ -18,99 +18,46 @@ namespace TYPO3\CMS\Backend\Controller\File;
+ use Psr\Http\Message\ResponseInterface;
+ use Psr\Http\Message\ServerRequestInterface;
+ use TYPO3\CMS\Core\Http\Response;
++use TYPO3\CMS\Core\Resource\File;
+ use TYPO3\CMS\Core\Resource\ProcessedFile;
+ use TYPO3\CMS\Core\Resource\ResourceFactory;
+ use TYPO3\CMS\Core\Utility\ArrayUtility;
+-use TYPO3\CMS\Core\Utility\GeneralUtility;
+ 
+ /**
+  * @internal This class is a specific Backend controller implementation and is not considered part of the Public TYPO3 API.
+  */
+ class ThumbnailController
+ {
+-    /**
+-     * @var array
+-     */
+-    protected $defaultConfiguration = [
+-        'width' => 64,
+-        'height' => 64,
+-        'crop' => null,
+-    ];
+-
+     /**
+      * @param ServerRequestInterface $request
+      * @return ResponseInterface
+      */
+     public function render(ServerRequestInterface $request): ResponseInterface
+     {
+-        try {
+-            $parameters = $this->extractParameters($request->getQueryParams());
+-            $response = $this->generateThumbnail(
+-                $parameters['fileId'] ?? null,
+-                $parameters['configuration'] ?? []
+-            );
+-        } catch (\TYPO3\CMS\Core\Resource\Exception $exception) {
+-            // catch and handle only resource related exceptions
+-            $response = $this->generateNotFoundResponse();
+-        }
+-
+-        return $response;
+-    }
+-
+-    /**
+-     * @param array $queryParameters
+-     * @return array|null
+-     */
+-    protected function extractParameters(array $queryParameters)
+-    {
+-        $expectedHash = GeneralUtility::hmac(
+-            $queryParameters['parameters'] ?? '',
+-            ThumbnailController::class
+-        );
+-        if (!hash_equals($expectedHash, $queryParameters['hmac'] ?? '')) {
+-            throw new \InvalidArgumentException(
+-                'HMAC could not be verified',
+-                1534484203
+-            );
+-        }
+-
+-        return json_decode($queryParameters['parameters'] ?? null, true);
+-    }
+-
+-    /**
+-     * @param mixed|int $fileId
+-     * @param array $configuration
+-     * @return Response
+-     * @throws \TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException
+-     */
+-    protected function generateThumbnail($fileId, array $configuration): ResponseInterface
+-    {
+-        $file = ResourceFactory::getInstance()->getFileObject($fileId);
+-        if (empty($file) || $file->isMissing()) {
+-            return $this->generateNotFoundResponse();
++        $fileObject = $this->getFileObjectByCombinedIdentifier($request->getQueryParams()['fileIdentifier']);
++        if (!$fileObject->isMissing()) {
++            $processingInstructions = [
++                'width' => 64,
++                'height' => 64,
++                'crop' => null,
++            ];
++            ArrayUtility::mergeRecursiveWithOverrule($processingInstructions, $request->getQueryParams()['processingInstructions']);
++            $processedImage = $fileObject->process(ProcessedFile::CONTEXT_IMAGECROPSCALEMASK, $processingInstructions);
++            $filePath = $processedImage->getForLocalProcessing(false);
++            return new Response($filePath, 200, [
++                'Content-Type' => $processedImage->getMimeType()
++            ]);
+         }
+-
+-        $processingConfiguration = $this->defaultConfiguration;
+-        ArrayUtility::mergeRecursiveWithOverrule(
+-            $processingConfiguration,
+-            $configuration
+-        );
+-
+-        $processedImage = $file->process(
+-            ProcessedFile::CONTEXT_IMAGECROPSCALEMASK,
+-            $processingConfiguration
+-        );
+-        $filePath = $processedImage->getForLocalProcessing(false);
+-        return new Response($filePath, 200, [
+-            'Content-Type' => $processedImage->getMimeType()
+-        ]);
++        return new Response('', 404);
+     }
+ 
+     /**
+-     * @return ResponseInterface
++     * @param string $combinedIdentifier
++     * @return File
++     * @throws \InvalidArgumentException
+      */
+-    protected function generateNotFoundResponse(): ResponseInterface
++    protected function getFileObjectByCombinedIdentifier(string $combinedIdentifier): File
+     {
+-        return new Response('', 404);
++        return ResourceFactory::getInstance()->getFileObjectFromCombinedIdentifier($combinedIdentifier);
+     }
+ }
+diff --git a/typo3/sysext/backend/Classes/Utility/BackendUtility.php b/typo3/sysext/backend/Classes/Utility/BackendUtility.php
+index 1e8a0df92a..785e162cb0 100644
+--- a/typo3/sysext/backend/Classes/Utility/BackendUtility.php
++++ b/typo3/sysext/backend/Classes/Utility/BackendUtility.php
+@@ -1372,23 +1372,16 @@ class BackendUtility
+                 ) {
+                     $cropVariantCollection = CropVariantCollection::create((string)$fileReferenceObject->getProperty('crop'));
+                     $cropArea = $cropVariantCollection->getCropArea();
+-                    $parameters = json_encode([
+-                        'fileId' => $fileObject->getUid(),
+-                        'configuration' => [
+-                            'width' => $sizeParts[0],
+-                            'height' => $sizeParts[1] . 'c',
+-                            'crop' => $cropArea->isEmpty() ? null : $cropArea->makeAbsoluteBasedOnFile($fileReferenceObject),
+-                        ]
+-                    ]);
+-                    $uriParameters = [
+-                        'parameters' => $parameters,
+-                        'hmac' => GeneralUtility::hmac(
+-                            $parameters,
+-                            \TYPO3\CMS\Backend\Controller\File\ThumbnailController::class
+-                        ),
++                    $processingInformation = [
++                        'width' => $sizeParts[0],
++                        'height' => $sizeParts[1] . 'c',
++                        'crop' => $cropArea->isEmpty() ? null : $cropArea->makeAbsoluteBasedOnFile($fileReferenceObject)
+                     ];
+                     $imageUrl = (string)GeneralUtility::makeInstance(UriBuilder::class)
+-                        ->buildUriFromRoute('thumbnails', $uriParameters);
++                        ->buildUriFromRoute('thumbnails', [
++                            'fileIdentifier' => $fileObject->getCombinedIdentifier(),
++                            'processingInstructions' => $processingInformation
++                        ]);
+                     $attributes = [
+                         'src' => $imageUrl,
+                         'width' => (int)$sizeParts[0],
+-- 
+2.19.1
+

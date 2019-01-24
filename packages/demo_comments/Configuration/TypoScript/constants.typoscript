@@ -1,0 +1,15 @@
+
+plugin.tx_democomments_feedback {
+    view {
+        # cat=plugin.tx_democomments_feedback/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:demo_comments/Resources/Private/Templates/
+        # cat=plugin.tx_democomments_feedback/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:demo_comments/Resources/Private/Partials/
+        # cat=plugin.tx_democomments_feedback/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:demo_comments/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_democomments_feedback//a; type=string; label=Default storage PID
+        storagePid =
+    }
+}

@@ -1,0 +1,51 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<f:layout name="Default" />
+
+	This Template is responsible for creating a table of domain objects.
+
+	If you modify this template, do not forget to change the overwrite settings
+	in /Configuration/ExtensionBuilder/settings.yaml:
+	  Resources:
+		Private:
+		  Templates:
+			List.html: keep
+
+	Otherwise your changes will be overwritten the next time you save the extension in the extension builder
+
+	<f:section name="content">
+		<h1>Listing for Comment</h1>
+
+		<f:flashMessages />
+
+		<f:for each="{comments}" as="comment">
+			<div class="card">
+				<div class="card-header">
+					{comment.date -> f:format.date(format:'c')}:
+					<a href="mailto:{comment.email}">{comment.email}</a>
+				</div>
+				<div class="card-body">
+					<f:format.html><f:spaceless>
+						<f:comment>Maybe some other view-helper is used create anchor tags...</f:comment>
+						<f:format.nl2br>{comment.message}</f:format.nl2br>
+					</f:spaceless></f:format.html>
+				</div>
+			</div>
+		</f:for>
+		<f:if condition="{comments}">
+			<f:else>
+				<div class="alert alert-warning">
+					No comments available, yet. Be the first one!
+				</div>
+			</f:else>
+		</f:if>
+
+		<h3>Add new comment</h3>
+
+		<f:render partial="FormErrors" />
+
+		<f:form action="create"  name="newComment" object="{newComment}">
+			<f:render partial="Comment/FormFields" />
+			<f:form.submit value="Create new" />
+		</f:form>
+	</f:section>
+</html>

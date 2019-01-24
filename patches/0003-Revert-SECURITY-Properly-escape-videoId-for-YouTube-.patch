@@ -1,0 +1,285 @@
+From e484bf5f3c8eefe101076383eb48e0d63573dbb5 Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Sun, 13 Jan 2019 21:47:53 +0100
+Subject: [PATCH 3/4] Revert "[SECURITY] Properly escape videoId for
+ YouTube/Vimeo"
+
+This reverts commit a32a9a746f807b14571139f0cb7caa00b8d037a5.
+---
+ .../OnlineMedia/Helpers/VimeoHelper.php       |  6 +-
+ .../OnlineMedia/Helpers/YouTubeHelper.php     |  6 +-
+ .../Resource/Rendering/VimeoRenderer.php      | 56 ++++++-------------
+ .../Resource/Rendering/YouTubeRenderer.php    | 51 ++++++-----------
+ .../Resource/Rendering/VimeoRendererTest.php  | 29 ++--------
+ .../Rendering/YouTubeRendererTest.php         | 25 +--------
+ 6 files changed, 44 insertions(+), 129 deletions(-)
+
+diff --git a/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/VimeoHelper.php b/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/VimeoHelper.php
+index 3f017be401..968df03617 100644
+--- a/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/VimeoHelper.php
++++ b/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/VimeoHelper.php
+@@ -34,7 +34,7 @@ class VimeoHelper extends AbstractOEmbedHelper
+     public function getPublicUrl(File $file, $relativeToCurrentScript = false)
+     {
+         $videoId = $this->getOnlineMediaId($file);
+-        return sprintf('https://vimeo.com/%s', rawurlencode($videoId));
++        return sprintf('https://vimeo.com/%s', $videoId);
+     }
+ 
+     /**
+@@ -92,8 +92,8 @@ class VimeoHelper extends AbstractOEmbedHelper
+     {
+         return sprintf(
+             'https://vimeo.com/api/oembed.%s?width=2048&url=%s',
+-            rawurlencode($format),
+-            rawurlencode(sprintf('https://vimeo.com/%s', rawurlencode($mediaId)))
++            urlencode($format),
++            urlencode(sprintf('https://vimeo.com/%s', $mediaId))
+         );
+     }
+ }
+diff --git a/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/YouTubeHelper.php b/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/YouTubeHelper.php
+index 90cae5c6d2..8eb5b33fcf 100644
+--- a/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/YouTubeHelper.php
++++ b/typo3/sysext/core/Classes/Resource/OnlineMedia/Helpers/YouTubeHelper.php
+@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Resource\Folder;
+ use TYPO3\CMS\Core\Utility\GeneralUtility;
+ 
+ /**
+- * Youtube helper class
++ * SlideShare helper class
+  */
+ class YouTubeHelper extends AbstractOEmbedHelper
+ {
+@@ -33,7 +33,7 @@ class YouTubeHelper extends AbstractOEmbedHelper
+     public function getPublicUrl(File $file, $relativeToCurrentScript = false)
+     {
+         $videoId = $this->getOnlineMediaId($file);
+-        return sprintf('https://www.youtube.com/watch?v=%s', rawurlencode($videoId));
++        return sprintf('https://www.youtube.com/watch?v=%s', $videoId);
+     }
+ 
+     /**
+@@ -101,7 +101,7 @@ class YouTubeHelper extends AbstractOEmbedHelper
+     {
+         return sprintf(
+             'https://www.youtube.com/oembed?url=%s&format=%s',
+-            rawurlencode(sprintf('https://www.youtube.com/watch?v=%s', rawurlencode($mediaId))),
++            urlencode(sprintf('https://www.youtube.com/watch?v=%s', $mediaId)),
+             rawurlencode($format)
+         );
+     }
+diff --git a/typo3/sysext/core/Classes/Resource/Rendering/VimeoRenderer.php b/typo3/sysext/core/Classes/Resource/Rendering/VimeoRenderer.php
+index f92e32faa4..56ea7da5fb 100644
+--- a/typo3/sysext/core/Classes/Resource/Rendering/VimeoRenderer.php
++++ b/typo3/sysext/core/Classes/Resource/Rendering/VimeoRenderer.php
+@@ -19,6 +19,7 @@ use TYPO3\CMS\Core\Resource\FileInterface;
+ use TYPO3\CMS\Core\Resource\FileReference;
+ use TYPO3\CMS\Core\Resource\OnlineMedia\Helpers\OnlineMediaHelperInterface;
+ use TYPO3\CMS\Core\Resource\OnlineMedia\Helpers\OnlineMediaHelperRegistry;
++use TYPO3\CMS\Core\Utility\GeneralUtility;
+ 
+ /**
+  * Vimeo renderer class
+@@ -95,8 +96,8 @@ class VimeoRenderer implements FileRendererInterface
+ 
+         return sprintf(
+             '<iframe src="%s"%s></iframe>',
+-            htmlspecialchars($src, ENT_QUOTES | ENT_HTML5),
+-            empty($attributes) ? '' : ' ' . $this->implodeAttributes($attributes)
++            $src,
++            empty($attributes) ? '' : ' ' . implode(' ', $attributes)
+         );
+     }
+ 
+@@ -145,7 +146,7 @@ class VimeoRenderer implements FileRendererInterface
+         $urlParams[] = 'byline=' . (int)!empty($options['showinfo']);
+         $urlParams[] = 'portrait=0';
+ 
+-        return sprintf('https://player.vimeo.com/video/%s?%s', $videoId, implode('&', $urlParams));
++        return sprintf('https://player.vimeo.com/video/%s?%s', $videoId, implode('&amp;', $urlParams));
+     }
+ 
+     /**
+@@ -167,59 +168,34 @@ class VimeoRenderer implements FileRendererInterface
+      * @param int|string $width
+      * @param int|string $height
+      * @param array $options
+-     * @return array pairs of key/value; not yet html-escaped
++     * @return array
+      */
+     protected function collectIframeAttributes($width, $height, array $options)
+     {
+-        $attributes = [];
+-        $attributes['allowfullscreen'] = true;
+-
++        $attributes = ['allowfullscreen'];
+         if (isset($options['additionalAttributes']) && is_array($options['additionalAttributes'])) {
+-            $attributes = array_merge($attributes, $options['additionalAttributes']);
++            $attributes[] = GeneralUtility::implodeAttributes($options['additionalAttributes'], true, true);
+         }
+         if (isset($options['data']) && is_array($options['data'])) {
+-            array_walk(
+-                $options['data'],
+-                function (&$value, $key) use (&$attributes) {
+-                    $attributes['data-' . $key] = $value;
+-                }
+-            );
++            array_walk($options['data'], function (&$value, $key) {
++                $value = 'data-' . htmlspecialchars($key) . '="' . htmlspecialchars($value) . '"';
++            });
++            $attributes[] = implode(' ', $options['data']);
+         }
+         if ((int)$width > 0) {
+-            $attributes['width'] = (int)$width;
++            $attributes[] = 'width="' . (int)$width . '"';
+         }
+         if ((int)$height > 0) {
+-            $attributes['height'] = (int)$height;
++            $attributes[] = 'height="' . (int)$height . '"';
+         }
+-        if (isset($GLOBALS['TSFE']) &&
+-            is_object($GLOBALS['TSFE']) &&
+-            $GLOBALS['TSFE']->config['config']['doctype'] !== 'html5') {
+-            $attributes['frameborder'] = 0;
++        if (isset($GLOBALS['TSFE']) && is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->config['config']['doctype'] !== 'html5') {
++            $attributes[] = 'frameborder="0"';
+         }
+         foreach (['class', 'dir', 'id', 'lang', 'style', 'title', 'accesskey', 'tabindex', 'onclick', 'allow'] as $key) {
+             if (!empty($options[$key])) {
+-                $attributes[$key] = $options[$key];
++                $attributes[] = $key . '="' . htmlspecialchars($options[$key]) . '"';
+             }
+         }
+         return $attributes;
+     }
+-
+-    /**
+-     * @internal
+-     * @param array $attributes
+-     * @return string
+-     */
+-    protected function implodeAttributes(array $attributes): string
+-    {
+-        $attributeList = [];
+-        foreach ($attributes as $name => $value) {
+-            $name = preg_replace('/[^\p{L}0-9_.-]/u', '', $name);
+-            if ($value === true) {
+-                $attributeList[] = $name;
+-            } else {
+-                $attributeList[] = $name . '="' . htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) . '"';
+-            }
+-        }
+-        return implode(' ', $attributeList);
+-    }
+ }
+diff --git a/typo3/sysext/core/Classes/Resource/Rendering/YouTubeRenderer.php b/typo3/sysext/core/Classes/Resource/Rendering/YouTubeRenderer.php
+index ec43fc13c1..3652ad9de2 100644
+--- a/typo3/sysext/core/Classes/Resource/Rendering/YouTubeRenderer.php
++++ b/typo3/sysext/core/Classes/Resource/Rendering/YouTubeRenderer.php
+@@ -96,8 +96,8 @@ class YouTubeRenderer implements FileRendererInterface
+ 
+         return sprintf(
+             '<iframe src="%s"%s></iframe>',
+-            htmlspecialchars($src, ENT_QUOTES | ENT_HTML5),
+-            empty($attributes) ? '' : ' ' . $this->implodeAttributes($attributes)
++            $src,
++            empty($attributes) ? '' : ' ' . implode(' ', $attributes)
+         );
+     }
+ 
+@@ -146,21 +146,21 @@ class YouTubeRenderer implements FileRendererInterface
+             $urlParams[] = 'modestbranding=1';
+         }
+         if (!empty($options['loop'])) {
+-            $urlParams[] = 'loop=1&playlist=' . rawurlencode($videoId);
++            $urlParams[] = 'loop=1&amp;playlist=' . $videoId;
+         }
+         if (isset($options['relatedVideos'])) {
+             $urlParams[] = 'rel=' . (int)(bool)$options['relatedVideos'];
+         }
+         if (!isset($options['enablejsapi']) || !empty($options['enablejsapi'])) {
+-            $urlParams[] = 'enablejsapi=1&origin=' . rawurlencode(GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST'));
++            $urlParams[] = 'enablejsapi=1&amp;origin=' . rawurlencode(GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST'));
+         }
+         $urlParams[] = 'showinfo=' . (int)!empty($options['showinfo']);
+ 
+         $youTubeUrl = sprintf(
+             'https://www.youtube%s.com/embed/%s?%s',
+             !isset($options['no-cookie']) || !empty($options['no-cookie']) ? '-nocookie' : '',
+-            rawurlencode($videoId),
+-            implode('&', $urlParams)
++            $videoId,
++            implode('&amp;', $urlParams)
+         );
+ 
+         return $youTubeUrl;
+@@ -185,55 +185,36 @@ class YouTubeRenderer implements FileRendererInterface
+      * @param int|string $width
+      * @param int|string $height
+      * @param array $options
+-     * @return array pairs of key/value; not yet html-escaped
++     * @return array
+      */
+     protected function collectIframeAttributes($width, $height, array $options)
+     {
+-        $attributes = [];
+-        $attributes['allowfullscreen'] = true;
++        $attributes = ['allowfullscreen'];
+ 
+         if (isset($options['additionalAttributes']) && is_array($options['additionalAttributes'])) {
+-            $attributes = array_merge($attributes, $options['additionalAttributes']);
++            $attributes[] = GeneralUtility::implodeAttributes($options['additionalAttributes'], true, true);
+         }
+         if (isset($options['data']) && is_array($options['data'])) {
+-            array_walk($options['data'], function (&$value, $key) use (&$attributes) {
+-                $attributes['data-' . $key] = $value;
++            array_walk($options['data'], function (&$value, $key) {
++                $value = 'data-' . htmlspecialchars($key) . '="' . htmlspecialchars($value) . '"';
+             });
++            $attributes[] = implode(' ', $options['data']);
+         }
+         if ((int)$width > 0) {
+-            $attributes['width'] = (int)$width;
++            $attributes[] = 'width="' . (int)$width . '"';
+         }
+         if ((int)$height > 0) {
+-            $attributes['height'] = (int)$height;
++            $attributes[] = 'height="' . (int)$height . '"';
+         }
+         if (isset($GLOBALS['TSFE']) && is_object($GLOBALS['TSFE']) && $GLOBALS['TSFE']->config['config']['doctype'] !== 'html5') {
+-            $attributes['frameborder'] = 0;
++            $attributes[] = 'frameborder="0"';
+         }
+         foreach (['class', 'dir', 'id', 'lang', 'style', 'title', 'accesskey', 'tabindex', 'onclick', 'poster', 'preload', 'allow'] as $key) {
+             if (!empty($options[$key])) {
+-                $attributes[$key] = $options[$key];
++                $attributes[] = $key . '="' . htmlspecialchars($options[$key]) . '"';
+             }
+         }
+ 
+         return $attributes;
+     }
+-
+-    /**
+-     * @internal
+-     * @param array $attributes
+-     * @return string
+-     */
+-    protected function implodeAttributes(array $attributes): string
+-    {
+-        $attributeList = [];
+-        foreach ($attributes as $name => $value) {
+-            $name = preg_replace('/[^\p{L}0-9_.-]/u', '', $name);
+-            if ($value === true) {
+-                $attributeList[] = $name;
+-            } else {
+-                $attributeList[] = $name . '="' . htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) . '"';
+-            }
+-        }
+-        return implode(' ', $attributeList);
+-    }
+ }
+-- 
+2.19.1
+

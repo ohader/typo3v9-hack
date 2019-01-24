@@ -1,0 +1,13 @@
+{
+    "patches": {
+        "typo3/cms-install": {
+            "0001": "patches/0001-Revert-SECURITY-Make-InstallTool-session-cookie-HTTP.patch"
+        },
+        "typo3/cms-core": {
+            "0003": "patches/0003-Revert-SECURITY-Properly-escape-videoId-for-YouTube-.patch"
+        },
+        "typo3/cms-backend": {
+            "0004": "patches/0004-Revert-SECURITY-Ensure-validity-of-parameters-submit.patch"
+        }
+    }
+}

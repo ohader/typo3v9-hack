@@ -1,0 +1,12 @@
+/.hack/insecure-deserialization.php
+/.idea
+/composer.lock
+/public/logger/log.txt
+/public/index.php
+/public/typo3
+/public/typo3conf
+/public/typo3temp/
+/public/**/_processed_
+/public/**/_temp_
+/vendor
+/var

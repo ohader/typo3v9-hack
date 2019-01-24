@@ -1,0 +1,29 @@
+{
+    "name": "oliver-hader/demo-comments",
+    "type": "typo3-cms-extension",
+    "description": "",
+    "authors": [
+        {
+            "name": "Oliver Hader",
+            "role": "Developer"
+        }
+    ],
+    "version": "1.0.0",
+    "require": {
+        "typo3/cms-core": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "OliverHader\\DemoComments\\": "Classes"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OliverHader\\DemoComments\\Tests\\": "Tests"
+        }
+    },
+    "replace": {
+        "demo_comments": "self.version",
+        "typo3-ter/demo-comments": "self.version"
+    }
+}

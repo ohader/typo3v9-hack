@@ -1,0 +1,41 @@
+{
+    "name": "oliverhader/typo3v9-hack",
+    "description": "DEMO: Recent TYPO3v9 vulnerabilities that have been fixed already",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Oliver Hader",
+            "email": "oliver@typo3.org"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/*"
+        }
+    ],
+    "require": {
+        "typo3/cms-backend": "^9.5",
+        "typo3/cms-core": "^9.5",
+        "typo3/cms-extbase": "^9.5",
+        "typo3/cms-extensionmanager": "^9.5",
+        "typo3/cms-filelist": "^9.5",
+        "typo3/cms-fluid": "^9.5",
+        "typo3/cms-frontend": "^9.5",
+        "typo3/cms-install": "^9.5",
+        "typo3/cms-recordlist": "^9.5",
+        "typo3/cms-tstemplate": "^9.5",
+        "cweagans/composer-patches": "^1.6",
+        "typo3/cms-introduction": "^4.0",
+        "helhum/typo3-console": "^5.6",
+        "typo3-console/composer-auto-commands": "^0.2.0",
+        "guzzlehttp/psr7": "~1.4.2",
+        "typo3/cms-workspaces": "^9.5",
+        "typo3/cms-beuser": "^9.5",
+        "oliver-hader/demo-site": "^1.0",
+        "oliver-hader/demo-comments": "^1.0"
+    },
+    "extra": {
+        "patches-file": "composer.patches.json"
+    }
+}

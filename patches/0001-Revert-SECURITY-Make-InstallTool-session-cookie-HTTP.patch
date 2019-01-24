@@ -1,0 +1,26 @@
+From 07aea7ea9478f2797c81a033f964a7f709391a78 Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Sun, 13 Jan 2019 21:45:02 +0100
+Subject: [PATCH 1/4] Revert "[SECURITY] Make InstallTool session cookie
+ HTTP-only"
+
+This reverts commit 13328b0f74ac589a20b021db814dfa672581c26a.
+---
+ typo3/sysext/install/Classes/Service/SessionService.php | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/typo3/sysext/install/Classes/Service/SessionService.php b/typo3/sysext/install/Classes/Service/SessionService.php
+index 96b189412b..b6f828a2b4 100644
+--- a/typo3/sysext/install/Classes/Service/SessionService.php
++++ b/typo3/sysext/install/Classes/Service/SessionService.php
+@@ -76,7 +76,6 @@ class SessionService implements SingletonInterface
+         session_set_save_handler([$this, 'open'], [$this, 'close'], [$this, 'read'], [$this, 'write'], [$this, 'destroy'], [$this, 'gc']);
+         session_save_path($sessionSavePath);
+         session_name($this->cookieName);
+-        ini_set('session.cookie_httponly', true);
+         ini_set('session.cookie_path', (string)GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'));
+         // Always call the garbage collector to clean up stale session files
+         ini_set('session.gc_probability', (string)100);
+-- 
+2.19.1
+
