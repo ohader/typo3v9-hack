@@ -17,6 +17,13 @@ vectors against TYPO3.
 * Classic SQL Injection via Stupid TypoScript
   + [5-SQLI-XSS-StupidTypoScript.md](.hack/5-SQLI-XSS-StupidTypoScript.md)
 
+## Video
+
+The mentioned hacks were demonstrated during TYPO3camp Mitteldeutschland, Dresden, DE
+in January 2019 - spoken language is unfortunately German, Slides are in English.
+
+https://www.youtube.com/watch?v=lefgKJSWqx0&feature=youtu.be&t=10800
+
 ## Installation
 
 * having Docker and DDEV installed
