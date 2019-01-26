@@ -28,6 +28,12 @@ vectors against TYPO3.
 * import database using ddev import-db --src ./ddev/database.sql.gz
 * web project is provided at http://typo3v9-hack.ddev.local/
 
+
+## TYPO3 Backend Accounts
+
+* admin/password
+* user/password
+
 ## Browser Exploitation Framework (BeEF)
 
 http://typo3v9-hack.ddev.local:3000/hook.js
