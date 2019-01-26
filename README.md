@@ -1,10 +1,8 @@
 # TYPO3 v9 Hacking
 
-<aside class="warning">
 This project is using TYPO3 v9.5.3 with a couple of unfixed/reverted security fixes.
 It is supposed to be **insecure** and serves as foundation for showing potential attack
 vectors against TYPO3.
-</aside>
 
 ## H4CK5
 
