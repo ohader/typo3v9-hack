@@ -1,4 +1,3 @@
-/.hack/insecure-deserialization.php
 /.idea
 /composer.lock
 /public/logger/log.txt
