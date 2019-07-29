@@ -34,9 +34,13 @@
         "typo3/cms-beuser": "^9.5",
         "oliver-hader/demo-site": "^1.0",
         "oliver-hader/demo-comments": "^1.0",
-        "typo3/cms-t3editor": "^9.5"
+        "typo3/cms-t3editor": "^9.5",
+        "typo3/cms-lowlevel": "^9.5"
     },
     "extra": {
         "patches-file": "composer.patches.json"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
     }
 }
