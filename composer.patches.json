@@ -3,11 +3,18 @@
         "typo3/cms-install": {
             "0001": "patches/0001-Revert-SECURITY-Make-InstallTool-session-cookie-HTTP.patch"
         },
-        "typo3/cms-core": {
-            "0003": "patches/0003-Revert-SECURITY-Properly-escape-videoId-for-YouTube-.patch"
-        },
         "typo3/cms-backend": {
-            "0004": "patches/0004-Revert-SECURITY-Ensure-validity-of-parameters-submit.patch"
+            "0004": "patches/0004-Revert-SECURITY-Ensure-validity-of-parameters-submit.patch",
+            "0051": "patches/0051-Revert-SECURITY-Deny-pages-TSconfig-and-tsconfig_inc.patch",
+            "0061": "patches/0061-Revert-SECURITY-Disallow-insecure-deserialization-fo.patch"
+        },
+        "typo3/cms-core": {
+            "0003": "patches/0003-Revert-SECURITY-Properly-escape-videoId-for-YouTube-.patch",
+            "0052": "patches/0052-Revert-SECURITY-Deny-pages-TSconfig-and-tsconfig_inc.patch",
+            "0062": "patches/0062-Revert-SECURITY-Disallow-insecure-deserialization-fo.patch"
+        },
+        "typo3/cms-frontend": {
+            "0053": "patches/0053-Revert-SECURITY-Deny-pages-TSconfig-and-tsconfig_inc.patch"
         }
     }
 }

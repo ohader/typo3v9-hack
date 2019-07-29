@@ -1,0 +1,31 @@
+From 075cb54106978e13a08d0f57e03d45ae592c7319 Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Mon, 29 Jul 2019 21:08:16 +0200
+Subject: [PATCH] Revert "[SECURITY] Disallow insecure deserialization for
+ l18n_diffsource"
+
+This reverts commit 555e0dd2b28f01a2f242dfefc0f344d10de50b2a.
+---
+ .../Classes/Form/FormDataProvider/DatabaseLanguageRows.php   | 5 +----
+ typo3/sysext/core/Classes/DataHandling/DataHandler.php       | 5 +----
+ 2 files changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/typo3/sysext/core/Classes/DataHandling/DataHandler.php b/typo3/sysext/core/Classes/DataHandling/DataHandler.php
+index 367d956a2d..f8921531e2 100644
+--- a/typo3/sysext/core/Classes/DataHandling/DataHandler.php
++++ b/typo3/sysext/core/Classes/DataHandling/DataHandler.php
+@@ -1483,10 +1483,7 @@ class DataHandler implements LoggerAwareInterface
+         ) {
+             $originalLanguageRecord = $this->recordInfo($table, $currentRecord[$GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']], '*');
+             BackendUtility::workspaceOL($table, $originalLanguageRecord);
+-            $originalLanguage_diffStorage = unserialize(
+-                $currentRecord[$GLOBALS['TCA'][$table]['ctrl']['transOrigDiffSourceField']],
+-                ['allowed_classes' => false]
+-            );
++            $originalLanguage_diffStorage = unserialize($currentRecord[$GLOBALS['TCA'][$table]['ctrl']['transOrigDiffSourceField']]);
+         }
+ 
+         $this->checkValue_currentRecord = $checkValueRecord;
+-- 
+2.21.0
+

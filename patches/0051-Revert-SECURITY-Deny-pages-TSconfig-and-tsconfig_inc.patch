@@ -1,0 +1,34 @@
+From 024309deb0e55ad6456a58f798bd9e25df32fab1 Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Mon, 29 Jul 2019 21:09:11 +0200
+Subject: [PATCH] Revert "[SECURITY] Deny pages' TSconfig and tsconfig_includes
+ for non-admins"
+
+This reverts commit 802e0567a06c9d6de2e8985e4e6323e17398aefa.
+---
+ .../Classes/Utility/BackendUtility.php        |   6 +-
+ .../core/Classes/Hooks/PagesTsConfigGuard.php |  42 ------
+ typo3/sysext/core/Configuration/TCA/pages.php |   2 -
+ typo3/sysext/core/ext_localconf.php           |   1 -
+ .../TypoScriptFrontendController.php          |   6 +-
+
+diff --git a/typo3/sysext/backend/Classes/Utility/BackendUtility.php b/typo3/sysext/backend/Classes/Utility/BackendUtility.php
+index 2e4a6652da..caa35fbe4a 100644
+--- a/typo3/sysext/backend/Classes/Utility/BackendUtility.php
++++ b/typo3/sysext/backend/Classes/Utility/BackendUtility.php
+@@ -958,9 +958,9 @@ class BackendUtility
+                             && ExtensionManagementUtility::isLoaded($includeTsConfigFileExtensionKey)
+                             && (string)$includeTsConfigFilename !== ''
+                         ) {
+-                            $extensionPath = ExtensionManagementUtility::extPath($includeTsConfigFileExtensionKey);
+-                            $includeTsConfigFileAndPath = PathUtility::getCanonicalPath($extensionPath . $includeTsConfigFilename);
+-                            if (strpos($includeTsConfigFileAndPath, $extensionPath) === 0 && file_exists($includeTsConfigFileAndPath)) {
++                            $includeTsConfigFileAndPath = ExtensionManagementUtility::extPath($includeTsConfigFileExtensionKey) .
++                                $includeTsConfigFilename;
++                            if (file_exists($includeTsConfigFileAndPath)) {
+                                 $tsDataArray['uid_' . $v['uid'] . '_static_' . $key] = file_get_contents($includeTsConfigFileAndPath);
+                             }
+                         }
+--
+2.21.0
+

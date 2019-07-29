@@ -1,0 +1,49 @@
+From 024309deb0e55ad6456a58f798bd9e25df32fab1 Mon Sep 17 00:00:00 2001
+From: Oliver Hader <oliver@typo3.org>
+Date: Mon, 29 Jul 2019 21:09:11 +0200
+Subject: [PATCH] Revert "[SECURITY] Deny pages' TSconfig and tsconfig_includes
+ for non-admins"
+
+This reverts commit 802e0567a06c9d6de2e8985e4e6323e17398aefa.
+---
+ .../Classes/Utility/BackendUtility.php        |   6 +-
+ .../core/Classes/Hooks/PagesTsConfigGuard.php |  42 ------
+ typo3/sysext/core/Configuration/TCA/pages.php |   2 -
+ typo3/sysext/core/ext_localconf.php           |   1 -
+ .../TypoScriptFrontendController.php          |   6 +-
+
+diff --git a/typo3/sysext/core/Configuration/TCA/pages.php b/typo3/sysext/core/Configuration/TCA/pages.php
+index e77582c7f1..6a79789a0c 100644
+--- a/typo3/sysext/core/Configuration/TCA/pages.php
++++ b/typo3/sysext/core/Configuration/TCA/pages.php
+@@ -172,7 +172,6 @@ return [
+             'exclude' => true,
+             'l10n_mode' => 'exclude',
+             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:TSconfig',
+-            'displayCond' => 'HIDE_FOR_NON_ADMINS',
+             'config' => [
+                 'type' => 'text',
+                 'cols' => 40,
+@@ -911,7 +910,6 @@ return [
+             'exclude' => true,
+             'l10n_mode' => 'exclude',
+             'label' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_tca.xlf:pages.tsconfig_includes',
+-            'displayCond' => 'HIDE_FOR_NON_ADMINS',
+             'config' => [
+                 'type' => 'select',
+                 'renderType' => 'selectMultipleSideBySide',
+diff --git a/typo3/sysext/core/ext_localconf.php b/typo3/sysext/core/ext_localconf.php
+index a922bd453d..4edc4f5d4e 100644
+--- a/typo3/sysext/core/ext_localconf.php
++++ b/typo3/sysext/core/ext_localconf.php
+@@ -33,7 +33,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
+ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = \TYPO3\CMS\Core\Hooks\SiteDataHandlerCacheHook::class;
+ 
+ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \TYPO3\CMS\Core\Hooks\DestroySessionHook::class;
+-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = \TYPO3\CMS\Core\Hooks\PagesTsConfigGuard::class;
+ 
+ $signalSlotDispatcher->connect(
+     \TYPO3\CMS\Core\Resource\ResourceStorage::class,
+--
+2.21.0
+
