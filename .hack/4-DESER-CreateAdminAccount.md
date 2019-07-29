@@ -96,6 +96,7 @@ http://typo3v9-hack.ddev.local/typo3/index.php?route=%2Ffile%2FFilelistList%2F
 ### Security Vulnerability
 
 * `guzzlehttp/psr7`, explicitly raised in https://review.typo3.org/#/c/59516/
+  + addressed in https://github.com/guzzle/psr7/commit/b27e0bdc20177262121f88a49d5bb135f3e589c0
   + composer scenarios affected until approx. December 2018
   + TYPO3 bundle (zip/tarball) scenarios affected until v8.7.22 and v9.5.3
 * exposed `encryptionKey` is (currently) not know as vulnerability
