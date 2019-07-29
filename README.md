@@ -33,7 +33,7 @@ https://www.youtube.com/watch?v=lefgKJSWqx0&feature=youtu.be&t=10800
 * execute ddev start
 * execute ddev composer install
 * import database using ddev import-db --src ./ddev/database.sql.gz
-* web project is provided at http://typo3v9-hack.ddev.local/
+* web project is provided at http://typo3v9-hack.ddev.site/
 
 
 ## TYPO3 Backend Accounts
@@ -43,9 +43,13 @@ https://www.youtube.com/watch?v=lefgKJSWqx0&feature=youtu.be&t=10800
 
 ## Browser Exploitation Framework (BeEF)
 
-http://typo3v9-hack.ddev.local:3000/hook.js
+**Hook to be used as XSS attack vector (to be injected in target application):**
 
-http://typo3v9-hack.ddev.local:3000/ui/panel
+http://typo3v9-hack.ddev.site:3000/hook.js
+
+**Admin and Control interface:**
+
+http://typo3v9-hack.ddev.site:3000/ui/panel
 
 * username: admin
 * password: joh316
