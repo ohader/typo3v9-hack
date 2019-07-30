@@ -15,7 +15,7 @@ vectors against TYPO3.
   + [3-API-RetrieveLocalConfiguration.md](.hack/3-API-RetrieveLocalConfiguration.md)
   + [4-DESER-CreateAdminAccount.md](.hack/4-DESER-CreateAdminAccount.md)
 * Classic SQL Injection via Stupid TypoScript
-  + [5-SQLI-XSS-StupidTypoScript.md](.hack/5-SQLI-XSS-StupidTypoScript.md)
+  + [7-SQLI-XSS-StupidTypoScript.md](.hack/7-SQLI-XSS-StupidTypoScript.md)
 
 ## Video
 
