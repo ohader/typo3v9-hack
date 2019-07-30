@@ -47,5 +47,11 @@
 			<f:render partial="Comment/FormFields" />
 			<f:form.submit value="Create new" />
 		</f:form>
+
+		<script type="text/javascript">
+			fetch('/?eID=comments&search=@', { cache: 'no-cache' })
+				.then((response) => response.json())
+				.then((json) => console.log(json));
+		</script>
 	</f:section>
 </html>
