@@ -1,7 +1,6 @@
 <?php
 namespace OliverHader\DemoComments\Domain\Model;
 
-
 /***
  *
  * This file is part of the "Demo Comments" Extension for TYPO3 CMS.
@@ -12,10 +11,13 @@ namespace OliverHader\DemoComments\Domain\Model;
  *  (c) 2019 Oliver Hader <oliver.hader@typo3.org>
  *
  ***/
+
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
 /**
  * Comment
  */
-class Comment extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Comment extends AbstractEntity
 {
 
     /**

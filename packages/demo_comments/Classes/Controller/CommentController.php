@@ -1,9 +1,6 @@
 <?php
 namespace OliverHader\DemoComments\Controller;
 
-
-use OliverHader\DemoComments\Domain\Repository\CommentRepository;
-
 /***
  *
  * This file is part of the "Demo Comments" Extension for TYPO3 CMS.
@@ -14,10 +11,15 @@ use OliverHader\DemoComments\Domain\Repository\CommentRepository;
  *  (c) 2019 Oliver Hader <oliver.hader@typo3.org>
  *
  ***/
+
+use OliverHader\DemoComments\Domain\Model\Comment;
+use OliverHader\DemoComments\Domain\Repository\CommentRepository;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+
 /**
  * CommentController
  */
-class CommentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class CommentController extends ActionController
 {
 
     /**
@@ -45,9 +47,12 @@ class CommentController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControll
     }
 
     /**
-     * @param \OliverHader\DemoComments\Domain\Model\Comment $newComment
+     * @param Comment $newComment
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
-    public function createAction(\OliverHader\DemoComments\Domain\Model\Comment $newComment)
+    public function createAction(Comment $newComment)
     {
         $newComment->setDate(new \DateTime('now'));
         $this->commentRepository->add($newComment);

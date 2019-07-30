@@ -1,7 +1,6 @@
 <?php
 namespace OliverHader\DemoComments\Domain\Repository;
 
-
 /***
  *
  * This file is part of the "Demo Comments" Extension for TYPO3 CMS.
@@ -12,9 +11,12 @@ namespace OliverHader\DemoComments\Domain\Repository;
  *  (c) 2019 Oliver Hader <oliver.hader@typo3.org>
  *
  ***/
+
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
 /**
  * The repository for Comments
  */
-class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class CommentRepository extends Repository
 {
 }
