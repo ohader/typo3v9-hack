@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+  sqlmap:
+    container_name: ddev-${DDEV_SITENAME}-sqlmap
+    image: 'jdecool/sqlmap:latest'
+    links:
+      - web:web
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+    entrypoint: "sleep infinity"
