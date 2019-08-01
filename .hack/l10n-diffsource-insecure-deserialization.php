@@ -70,7 +70,7 @@ namespace {
         'token' => $token,
         'edit' => [
             'pages' => [
-                '-1' => 'new',
+                '1' => 'new',
             ]
         ],
         'overrideVals' => [
