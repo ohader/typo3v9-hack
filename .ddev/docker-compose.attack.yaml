@@ -5,7 +5,7 @@ services:
     container_name: ddev-${DDEV_SITENAME}-attack
     # comment out `image` and `entrypoint` in order to active
     image: 'tianon/true'
-    entrypoint: /true
+    entrypoint: "/true"
     # uncomment `build` in order to activate
     # build: 'attack'
     network_mode: 'host'
@@ -36,7 +36,7 @@ services:
     container_name: ddev-${DDEV_SITENAME}-ftp
     # comment out `image` and `entrypoint` in order to active
     image: 'tianon/true'
-    entrypoint: /true
+    entrypoint: "/true"
     # uncomment `image` in order to activate
     # image: 'hauptmedia/proftpd:latest'
     labels:
